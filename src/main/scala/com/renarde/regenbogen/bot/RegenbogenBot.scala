@@ -3,27 +3,31 @@ package com.renarde.regenbogen.bot
 import cats.instances.future._
 import cats.syntax.functor._
 import com.bot4s.telegram.Implicits._
-import com.bot4s.telegram.api.RequestHandler
 import com.bot4s.telegram.api.declarative.{Commands, Messages}
-import com.bot4s.telegram.clients.ScalajHttpClient
-import com.bot4s.telegram.future.{Polling, TelegramBot}
+import com.bot4s.telegram.api.{AkkaTelegramBot, Webhook}
+import com.bot4s.telegram.clients.AkkaHttpClient
 import com.bot4s.telegram.models.{KeyboardButton, ReplyKeyboardMarkup}
 import com.renarde.regenbogen.weather.DarkSkyClient
 import slogging.{LogLevel, LoggerConfig, PrintLoggerFactory}
 
 import scala.concurrent.Future
 
-class RegenbogenBot(val token: String, weatherKey: String) extends TelegramBot
-  with Polling
+class RegenbogenBot(val token: String,
+                    weatherKey: String,
+                    applicationWebhookUrl: String,
+                    applicationPort: Int) extends AkkaTelegramBot
+  with Webhook
   with Commands[Future]
   with Messages[Future] {
 
-  override val client: RequestHandler[Future] = new ScalajHttpClient(token)
+  override val client = new AkkaHttpClient(token)
+  override val webhookUrl: String = applicationWebhookUrl
+  override val port: Int = applicationPort
+
   private val weatherClient: DarkSkyClient = new DarkSkyClient(weatherKey)
 
   LoggerConfig.factory = PrintLoggerFactory()
   LoggerConfig.level = LogLevel.TRACE
-
 
   onCommand("/start") { implicit msg =>
     logger.info("Start request received")
