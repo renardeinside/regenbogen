@@ -15,14 +15,13 @@ object MainApp extends App with LazyLogging {
   val token = sys.env("REGENBOGEN_BOT_TOKEN")
   val weatherKey = sys.env("REGENBOGEN_DS_KEY")
   val applicationWebhookUrl = sys.env("REGENBOGEN_WEBHOOK_URL")
+  val applicationPort = sys.env("PORT").toInt
+
   override def main(args: Array[String]): Unit = {
     super.main(args)
 
     logger.trace("Starting main application")
 
-
-
-    val applicationPort = 80
 
     bot = new RegenbogenBot(token, weatherKey, applicationWebhookUrl, applicationPort)
     val eol = bot.run()

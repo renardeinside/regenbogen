@@ -19,4 +19,5 @@ libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.8"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 
-mainClass in compile := Some("com.renarde.regenbogen.MainApp")
+mainClass in Compile := Some("com.renarde.regenbogen.MainApp")
+herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value)
