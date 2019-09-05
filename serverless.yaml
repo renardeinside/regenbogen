@@ -1,0 +1,31 @@
+service: regenbogen
+app: regenbogen
+org: renardeinside
+
+provider:
+  name: aws
+  runtime: java8
+  stage: live
+  region: eu-central-1
+
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
+
+package:
+  artifact: target/scala-2.11/regenbogen-assembly-0.1.jar
+
+functions:
+  webhook:
+    handler: com.renarde.regenbogen.MainApp
+    events:
+      - http:
+          path: /
+          method: get
+    memorySize: 256
+    reservedConcurrency: 5
+    environment:
+      REGENBOGEN_DS_KEY: ${secrets:REGENBOGEN_DS_KEY}
+      REGENBOGEN_BOT_TOKEN: ${secrets:REGENBOGEN_BOT_TOKEN}
+      WEBHOOK_URL: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:custom.region}.amazonaws.com/${self:custom.stage}" ] ]  }
