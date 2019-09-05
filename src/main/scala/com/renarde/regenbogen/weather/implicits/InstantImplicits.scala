@@ -1,6 +1,7 @@
 package com.renarde.regenbogen.weather.implicits
 
 import java.text.SimpleDateFormat
+import java.time.Instant
 
 
 object InstantImplicits {
@@ -11,6 +12,7 @@ object InstantImplicits {
     val instantWithMilliseconds: Long = instantValue * 1000L
     def hourRepr: String = withHourFormatter.format(instantWithMilliseconds)
     def dayRepr: String = dayFormatter.format(instantWithMilliseconds)
+    def instantRepr: Instant = Instant.ofEpochMilli(instantWithMilliseconds)
   }
 
 }

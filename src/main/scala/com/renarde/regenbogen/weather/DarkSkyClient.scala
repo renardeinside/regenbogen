@@ -1,5 +1,8 @@
 package com.renarde.regenbogen.weather
 
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+
 import com.bot4s.telegram.models.Location
 import com.renarde.regenbogen.weather.implicits.InstantImplicits._
 import com.renarde.regenbogen.weather.models.{DarkSkyHourlyData, DarkSkyResponse}
@@ -53,18 +56,26 @@ class DarkSkyClient(token: String) extends LazyLogging {
   }
 
 
-  def prepareForecastString(response: DarkSkyResponse): String = {
+  def takeNearestHours(response: DarkSkyResponse): DarkSkyResponse = {
+    response.copy(
+      hourly = response.hourly.copy(
+        data = response.hourly.data.filter(_.time.instantRepr.isBefore(Instant.now().plus(12, ChronoUnit.HOURS)))
+      )
+    )
+  }
 
-    val forecastDate = response.hourly.data.head.time.dayRepr
-    val maxTemperature = response.hourly.data.maxBy(_.temperature)
-    val minTemperature = response.hourly.data.minBy(_.temperature)
-    val precipData = response.hourly.data.maxBy(_.precipProbability)
+  def prepareForecastString(response: DarkSkyResponse): String = {
+    val truncatedResponse = takeNearestHours(response)
+    val forecastDate = truncatedResponse.hourly.data.head.time.dayRepr
+    val maxTemperature = truncatedResponse.hourly.data.maxBy(_.temperature)
+    val minTemperature = truncatedResponse.hourly.data.minBy(_.temperature)
+    val precipData = truncatedResponse.hourly.data.maxBy(_.precipProbability)
     val precipText: String = preparePrecipText(precipData)
 
     val forecastString =
       s"""
          |*Weather forecast for $forecastDate *
-         |Global summary: ${response.hourly.summary.toLowerCase}
+         |Global summary: ${truncatedResponse.hourly.summary.toLowerCase}
          |
          |*Temperature*
          |Maximum is ${maxTemperature.temperature} at ${maxTemperature.time.hourRepr}
@@ -73,7 +84,7 @@ class DarkSkyClient(token: String) extends LazyLogging {
          |*Rain*
          |$precipText
          |
-         |We wish you a pleasant day!
+         |Wish you a pleasant day!
       """.stripMargin
 
 

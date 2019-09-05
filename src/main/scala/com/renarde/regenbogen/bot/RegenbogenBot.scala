@@ -50,9 +50,7 @@ class RegenbogenBot(val token: String, weatherKey: String) extends TelegramBot
     using(_.location) { location =>
       val forecast = weatherClient.getForecast(location)
       logger.info(s"forecast string $forecast")
-      replyMd(
-        forecast
-      ).void
+      replyMd(forecast).void
 
     }
   }
