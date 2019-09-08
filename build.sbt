@@ -19,5 +19,9 @@ libraryDependencies += "com.typesafe.akka" %% "akka-stream" % akkaVersion
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.8"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 
+libraryDependencies += "com.amazonaws" % "aws-lambda-java-events" % "2.2.6"
+libraryDependencies += "com.amazonaws" % "aws-lambda-java-core" % "1.2.0"
+
+
 mainClass in Compile := Some("com.renarde.regenbogen.MainApp")
 herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value)
