@@ -1,5 +1,7 @@
 deploy:
 	sbt assembly
+	sam package --s3-bucket renarde-lambda --output-template-file target/packaged.yaml
+	aws cloudformation deploy --template-file target/packaged.yaml --stack-name regenbogen-lambda-prod --capabilities CAPABILITY_IAM
 
 set-webhook:
 	curl --request POST  \
@@ -8,3 +10,4 @@ set-webhook:
 
 invocation:
 	sbt assembly && curl http://127.0.0.1:3000/
+

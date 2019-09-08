@@ -1,0 +1,23 @@
+Transform: 'AWS::Serverless-2016-10-31'
+
+Resources:
+  RegenbogenHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: regenbogen-prod
+      Runtime: java8
+      Handler: com.renarde.regenbogen.TelegramRequestHandler::handle
+      CodeUri: target/scala-2.11/regenbogen-assembly-0.1.jar
+      Timeout: 15
+      Events:
+        generic:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+
+
+Outputs:
+  RegenbogenApi:
+    Description: "API Gateway endpoint URL for Prod stage for function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
